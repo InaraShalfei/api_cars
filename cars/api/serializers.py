@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Auto, Owner
+from .models import Auto, Owner, OwnerAuto
 from djoser.serializers import UserSerializer, User
 
 
@@ -17,9 +17,21 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class AutoSerializer(serializers.ModelSerializer):
-    owners = OwnerSerializer(read_only=True, many=True)
+    owners = OwnerSerializer(many=True)
 
     class Meta:
         model = Auto
         fields = ('model', 'color', 'production_year', 'engine_capacity', 'owners')
+
+    def create(self, validated_data):
+        owners = validated_data.pop('owners')
+        auto = Auto.objects.create(**validated_data)
+        for owner in owners:
+            current, status = Owner.objects.get_or_create(
+                **owner)
+            OwnerAuto.objects.create(
+                owner=current, car=auto)
+        return auto
+
+    #TODO update method
 
