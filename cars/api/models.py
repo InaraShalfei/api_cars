@@ -15,6 +15,7 @@ class Auto(models.Model):
     production_year = models.IntegerField(blank=True, null=True)
     engine_capacity = models.IntegerField(blank=True, null=True)
     owners = models.ManyToManyField(Owner, through='OwnerAuto')
+    vin_code = models.IntegerField(unique=True)
 
     def __str__(self):
         return f'{self.model}'
