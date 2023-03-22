@@ -21,7 +21,7 @@ class AutoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Auto
-        fields = ('model', 'color', 'production_year', 'engine_capacity', 'owners')
+        fields = ('model', 'color', 'production_year', 'engine_capacity', 'owners', 'vin_code')
 
     def create(self, validated_data):
         owners = validated_data.pop('owners')
@@ -33,5 +33,25 @@ class AutoSerializer(serializers.ModelSerializer):
                 owner=current, auto=auto)
         return auto
 
-    #TODO update method
+    # def update(self, instance, validated_data):
+    #     owners = validated_data.pop('owners')
+    #     RecipeIngredient.objects.filter(recipe=instance).delete()
+    #     recipe_ingredients = {}
+    #     for item in ingredients:
+    #         amount = item.pop('amount')
+    #         ingredient = item.pop('id')
+    #         if ingredient.id not in recipe_ingredients:
+    #             recipe_ingredients[ingredient.id] = RecipeIngredient(
+    #                 amount=amount,
+    #                 ingredient=ingredient,
+    #                 recipe=instance)
+    #         else:
+    #             recipe_ingredients[ingredient.id].amount += amount
+    #     for recipe_ingredient in recipe_ingredients.values():
+    #         recipe_ingredient.save()
+    #     for (key, value) in validated_data.items():
+    #         setattr(instance, key, value)
+    #     instance.save()
+    #     instance.tags.set(tags)
+    #     return instance
 
