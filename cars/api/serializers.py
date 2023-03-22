@@ -30,7 +30,7 @@ class AutoSerializer(serializers.ModelSerializer):
             current, status = Owner.objects.get_or_create(
                 **owner)
             OwnerAuto.objects.create(
-                owner=current, car=auto)
+                owner=current, auto=auto)
         return auto
 
     #TODO update method

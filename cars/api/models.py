@@ -14,15 +14,12 @@ class Auto(models.Model):
     color = models.CharField(max_length=100)
     production_year = models.IntegerField(blank=True, null=True)
     engine_capacity = models.IntegerField(blank=True, null=True)
-    owners = models.ManyToManyField(
-        Owner, through='Purchase')
+    owners = models.ManyToManyField(Owner, through='OwnerAuto')
 
     def __str__(self):
         return f'{self.model}'
 
 
-class Purchase(models.Model):
+class OwnerAuto(models.Model):
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
-    car = models.ForeignKey(Auto, on_delete=models.CASCADE)
-    date_of_purchase = models.DateField()
-    purchase_price = models.IntegerField()
+    auto = models.ForeignKey(Auto, on_delete=models.CASCADE)
