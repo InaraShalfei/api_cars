@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import serializers
 
 from .models import Auto, Owner, OwnerAuto
@@ -18,10 +20,14 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 class AutoSerializer(serializers.ModelSerializer):
     owners = OwnerSerializer(many=True)
+    usage_years = serializers.SerializerMethodField()
 
     class Meta:
         model = Auto
-        fields = ('model', 'color', 'production_year', 'engine_capacity', 'owners', 'vin_code')
+        fields = ('model', 'color', 'production_year', 'engine_capacity', 'owners', 'vin_code', 'usage_years')
+
+    def get_usage_years(self, obj):
+        return datetime.datetime.now().year - obj.production_year
 
     def create(self, validated_data):
         owners = validated_data.pop('owners')
