@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Auto, Owner
-from .serializers import AutoSerializer, OwnerSerializer
+from .serializers import AutoSerializer, OwnerSerializer, AutoListSerializer
 
 
 class AutoViewsSet(viewsets.ModelViewSet):
@@ -16,6 +16,11 @@ class AutoViewsSet(viewsets.ModelViewSet):
         autos = Auto.objects.annotate(owners_count=Count('owners')).filter(owners_count__gte=1)
         serializer = self.get_serializer(autos, many=True)
         return Response(serializer.data)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return AutoListSerializer
+        return AutoSerializer
 
 
 class OwnerViewSet(viewsets.ModelViewSet):

@@ -51,3 +51,12 @@ class AutoSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class AutoListSerializer(serializers.ModelSerializer):
+    usage_years = serializers.SerializerMethodField()
+    class Meta:
+        model = Auto
+        fields = ('model', 'color', 'engine_capacity', 'usage_years')
+
+    def get_usage_years(self, obj):
+        return datetime.datetime.now().year - obj.production_year
