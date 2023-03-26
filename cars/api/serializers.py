@@ -5,6 +5,13 @@ from rest_framework import serializers
 from .models import Auto, Owner, OwnerAuto
 from djoser.serializers import UserSerializer, User
 
+from .choices import CHOICES
+
+
+class AutoListField(serializers.StringRelatedField):
+    def to_representation(self, value):
+        return f'{value.model}, VIN code: {value.vin_code}, color: {value.color}'
+
 
 class CustomUserSerializer(UserSerializer):
     class Meta:
@@ -13,13 +20,31 @@ class CustomUserSerializer(UserSerializer):
 
 
 class OwnerSerializer(serializers.ModelSerializer):
+    autos = AutoListField(read_only=True, many=True)
+    age = serializers.SerializerMethodField()
+    nationality = serializers.ChoiceField(choices=CHOICES, allow_blank=False)
+
     class Meta:
         model = Owner
-        fields = '__all__'
+        fields = ('first_name', 'last_name', 'autos', 'date_of_birth', 'nationality', 'age')
+
+    def get_age(self, obj):
+        return datetime.datetime.now().year - obj.date_of_birth
+
+
+class OwnerListSerializer(serializers.ModelSerializer):
+    number_of_autos = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Owner
+        fields = ('first_name', 'last_name', 'number_of_autos')
+
+    def get_number_of_autos(self, obj):
+        return obj.autos.count()
 
 
 class AutoSerializer(serializers.ModelSerializer):
-    owners = OwnerSerializer(many=True)
+    owners = OwnerListSerializer(many=True, required=False)
     usage_years = serializers.SerializerMethodField()
 
     class Meta:
@@ -54,6 +79,7 @@ class AutoSerializer(serializers.ModelSerializer):
 
 class AutoListSerializer(serializers.ModelSerializer):
     usage_years = serializers.SerializerMethodField()
+
     class Meta:
         model = Auto
         fields = ('model', 'color', 'engine_capacity', 'usage_years')
