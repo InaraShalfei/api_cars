@@ -1,11 +1,24 @@
 import datetime
 
+import webcolors
 from rest_framework import serializers
 
 from .models import Auto, Owner, OwnerAuto
 from djoser.serializers import UserSerializer, User
 
 from .choices import CHOICES
+
+
+class Hex2NameColor(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        try:
+            data = webcolors.hex_to_name(data)
+        except ValueError:
+            raise serializers.ValidationError('Для этого цвета нет имени')
+        return data
 
 
 class AutoListField(serializers.StringRelatedField):
@@ -46,6 +59,7 @@ class OwnerListSerializer(serializers.ModelSerializer):
 class AutoSerializer(serializers.ModelSerializer):
     owners = OwnerListSerializer(many=True, required=False)
     usage_years = serializers.SerializerMethodField()
+    color = Hex2NameColor()
 
     class Meta:
         model = Auto
