@@ -69,6 +69,9 @@ class AutoSerializer(serializers.ModelSerializer):
         return datetime.datetime.now().year - obj.production_year
 
     def create(self, validated_data):
+        if 'owners' not in self.initial_data:
+            auto = Auto.objects.create(**validated_data)
+            return auto
         owners = validated_data.pop('owners')
         auto = Auto.objects.create(**validated_data)
         for owner in owners:
