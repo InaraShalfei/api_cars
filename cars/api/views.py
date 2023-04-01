@@ -14,7 +14,7 @@ class AutoViewsSet(viewsets.ModelViewSet):
     @action(detail=False)
     def multiple_purchase(self, request):
         autos = Auto.objects.annotate(owners_count=Count('owners')).filter(owners_count__gte=1)
-        serializer = self.get_serializer(autos, many=True)
+        serializer = AutoListSerializer(autos, many=True)
         return Response(serializer.data)
 
     def get_serializer_class(self):
