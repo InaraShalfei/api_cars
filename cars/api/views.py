@@ -13,9 +13,10 @@ from .serializers import AutoSerializer, OwnerSerializer, AutoListSerializer, Ow
 class AutoViewsSet(viewsets.ModelViewSet):
     queryset = Auto.objects.all()
     serializer_class = AutoSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ('model', 'color', 'production_year')
     search_fields = ('^model', )
+    ordering_fields = ('model', 'production_year', )
 
     @action(detail=False)
     def multiple_purchase(self, request):
@@ -32,9 +33,10 @@ class AutoViewsSet(viewsets.ModelViewSet):
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = Owner.objects.all()
     serializer_class = OwnerSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ('first_name', 'last_name', 'date_of_birth', 'nationality')
-    search_fields = ('^first_name', '^last_name',)
+    search_fields = ('^first_name', '^last_name', )
+    ordering_fields = ('last_name', 'date_of_birth', )
 
     @action(detail=False)
     def adults(self, request):
