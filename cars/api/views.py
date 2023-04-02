@@ -1,7 +1,8 @@
 import datetime
 
 from django.db.models import Count, F
-from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -12,6 +13,9 @@ from .serializers import AutoSerializer, OwnerSerializer, AutoListSerializer, Ow
 class AutoViewsSet(viewsets.ModelViewSet):
     queryset = Auto.objects.all()
     serializer_class = AutoSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ('model', 'color', 'production_year')
+    search_fields = ('^model', )
 
     @action(detail=False)
     def multiple_purchase(self, request):
@@ -28,6 +32,9 @@ class AutoViewsSet(viewsets.ModelViewSet):
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = Owner.objects.all()
     serializer_class = OwnerSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ('first_name', 'last_name', 'date_of_birth', 'nationality')
+    search_fields = ('^first_name', '^last_name',)
 
     @action(detail=False)
     def adults(self, request):
