@@ -1,4 +1,6 @@
-from django.db.models import Count
+import datetime
+
+from django.db.models import Count, F
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -26,6 +28,14 @@ class AutoViewsSet(viewsets.ModelViewSet):
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = Owner.objects.all()
     serializer_class = OwnerSerializer
+
+    @action(detail=False)
+    def adults(self, request):
+        current_time = datetime.datetime.now()
+        current_year_int = int(current_time.strftime('%Y'))
+        owners = Owner.objects.annotate(difference=current_year_int - F('date_of_birth')).filter(difference__gte=18)
+        serializer = OwnerListSerializer(owners, many=True)
+        return Response(serializer.data)
 
     def get_serializer_class(self):
         if self.action == 'list':
